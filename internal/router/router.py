@@ -18,6 +18,6 @@ class Router:
         # 将Url与对应的控制器方法做
         # view_func 如果是app_handler.ping() 则代表的是使用返回值
         bp.add_url_rule("/ping", view_func=self.app_handler.ping)
-
+        bp.add_url_rule("/app/completion", methods=["POST"], view_func=self.app_handler.completion)
         # 在应用上去注册蓝图
         app.register_blueprint(bp)
