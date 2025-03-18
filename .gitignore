@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
 # --- 虚拟环境 ---
 venv/                # 虚拟环境目录（如使用 virtualenv 或 venv 模块创建）
 .env                 # 环境变量文件（可能包含敏感信息）
@@ -10,7 +9,7 @@ env/
 
 # --- IDE 配置 ---
 .vscode/             # VS Code 配置
-.idea/              # PyCharm 配置
+.idea/
 *.iml                # IntelliJ 项目文件
 *.code-workspace     # VS Code 工作区文件
 
