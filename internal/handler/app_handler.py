@@ -3,7 +3,7 @@ from openai import OpenAI
 import os
 from internal.schema.app_schema import CompletionReq
 from internal.exception import FailException
-
+from pkg.response.response import json,success_json,validate_error_json
 
 class AppHandler:
     """应用控制器"""
@@ -15,7 +15,7 @@ class AppHandler:
         # 3. 得到请求响应返回给前端
         req = CompletionReq()
         if not req.validate():
-            return req.errors
+            return validate_error_json(req.errors)
         clint = OpenAI(api_key=os.environ.get("DS_KEY"), base_url=os.environ.get("DS_API_BASE"))
 
         completions = clint.chat.completions.create(model="deepseek-chat", messages=[
@@ -23,7 +23,7 @@ class AppHandler:
             {"role": "user", "content": req.query.data}
         ])
         content = completions.choices[0].message.content
-        return content
+        return success_json(content)
 
     def ping(self):
         

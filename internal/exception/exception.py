@@ -41,4 +41,4 @@ class BadRequestException(CustomException):
 
 class ValidationException(CustomException):
     """请求参数异常"""
-    code: HttpCode.VALIDATION_ERROR
+    code: HttpCode.VALIDATE_ERROR

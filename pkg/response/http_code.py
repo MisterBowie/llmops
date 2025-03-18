@@ -8,5 +8,5 @@ class HttpCode(str,Enum):
     NOT_FOUND = "not_found"
     UNAUTHORIZED = "unauthorized"
     FORBIDDEN = "forbidden"
-    VALIDATION_ERROR = "validation_error"
+    VALIDATE_ERROR = "validate_error"
     BAD_REQUEST = "bad_request"
