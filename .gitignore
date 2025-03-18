@@ -8,10 +8,10 @@ venv/                # 虚拟环境目录（如使用 virtualenv 或 venv 模块
 env/
 
 # --- IDE 配置 ---
-.vscode/             # VS Code 配置
+.vscode/
 .idea/
-*.iml                # IntelliJ 项目文件
-*.code-workspace     # VS Code 工作区文件
+*.iml
+*.code-workspace
 
 # --- Flask 相关 ---
 instance/            # Flask 实例文件夹（可能包含本地配置）
