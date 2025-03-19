@@ -1,0 +1,10 @@
+DEFAULT_CONFIG = {
+    # csrf关闭
+    "WTF_CSRF_ENABLED": "False",
+    # 数据库链接配置
+    "SQLALCHEMY_DATABASE_URI": "",
+    "SQLALCHEMY_POOL_SIZE": 30,
+    "SQLALCHEMY_POOL_RECYCLE": 3600,
+    "SQLALCHEMY_ECHO": "True",
+
+}

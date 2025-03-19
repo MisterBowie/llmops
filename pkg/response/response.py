@@ -28,18 +28,19 @@ def json(data: Response = None):
 
 def success_json(data: Any = None):
     """成功数据响应"""
-    return json(Response(code=HttpCode.SUCCESS, message="", data=data))
+    return json(Response(code=HttpCode.SUCCESS, message="操作成功", data=data))
 
 
 def fail_json(data: Any = None):
     """失败数据响应"""
-    return json(Response(code=HttpCode.FAIL, message="", data=data))
+    return json(Response(code=HttpCode.FAIL, message="操作失败", data=data))
 
 
 def validate_error_json(errors: dict = None):
     """数据验证错误响应"""
     first_key = next(iter(errors))
     if first_key is not None:
+        print(errors)
         msg = errors.get(first_key)[0]
     else:
         msg = ""

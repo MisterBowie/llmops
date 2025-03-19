@@ -2,30 +2,37 @@ from flask import Flask
 from internal.router import Router
 from config import Config
 from internal.exception import CustomException
-from pkg.response import json,Response,HttpCode
+from pkg.response import json, Response, HttpCode
 import os
 
-from flask_sqlalchemy import SQLAlchemy
+
+from internal.model import App
+from pkg.sqlalchemy import SQLAlchemy
+
 
 class Http(Flask):
-    def __init__(self, *args, conf: Config,db: SQLAlchemy, router: Router, **kwargs):
-        #1.调用父类的构造的初始化
+    def __init__(self, *args, conf: Config, db: SQLAlchemy, router: Router, **kwargs):
+        # 1.调用父类的构造的初始化
         super().__init__(*args, **kwargs)
-        
+
         # 初始化应用配置
         self.config.from_object(conf)
-        
-        #注册绑定异常
+
+        # 注册绑定异常
         self.register_error_handler(Exception, self._register_error_handler)
-        
-        #注册数据库
+
+        # 注册数据库
         db.init_app(self)
+        # 创建表
+        with self.app_context():
+            _ = App()
+            db.create_all()
         # 注册应用路由
         router.register_router(self)
-       
-    def _register_error_handler(self,error: Exception):
+
+    def _register_error_handler(self, error: Exception):
         # 判断异常是不是我们的自定义异常
-        
+
         if isinstance(error, CustomException):
             return json(Response(
                 code=error.code,

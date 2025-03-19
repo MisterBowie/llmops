@@ -3,8 +3,8 @@ from internal.server import Http
 from internal.router import Router
 from config import Config
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
 from app.http.module import ExtensionModule
+from pkg.sqlalchemy import SQLAlchemy
 
 load_dotenv()
 

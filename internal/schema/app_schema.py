@@ -10,3 +10,4 @@ class CompletionReq(FlaskForm):
         DataRequired(message="用户提问是必填的"),
         Length(max=1000, message="用户提问最大1000")
     ])
+
