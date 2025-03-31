@@ -16,6 +16,7 @@ def _get_bool_env(key: str) -> bool:
 
 class Config:
     def __init__(self):
+        print("WTF_CSRF_ENABLED", _get_bool_env("WTF_CSRF_ENABLED"))
         # 关闭CSRF
         self.WTF_CSRF_ENABLED = _get_bool_env("WTF_CSRF_ENABLED")
         # 配置数据库

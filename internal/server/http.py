@@ -4,7 +4,7 @@ from config import Config
 from internal.exception import CustomException
 from pkg.response import json, Response, HttpCode
 import os
-
+from flask_cors import CORS
 
 from internal.model import App
 from pkg.sqlalchemy import SQLAlchemy
@@ -24,9 +24,16 @@ class Http(Flask):
         # 注册数据库
         db.init_app(self)
         # 创建表
-        with self.app_context():
-            _ = App()
-            db.create_all()
+        # with self.app_context():
+        #     _ = App()
+        #     db.create_all()
+
+        CORS(self, resources={
+            r"/*": {
+                "origins": "*",
+                "supports_credentials": True,
+            }
+        })
         # 注册应用路由
         router.register_router(self)
 
