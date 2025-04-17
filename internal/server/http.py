@@ -27,7 +27,7 @@ class Http(Flask):
         # with self.app_context():
         #     _ = App()
         #     db.create_all()
-
+        # 5.解决前后端跨域问题
         CORS(self, resources={
             r"/*": {
                 "origins": "*",

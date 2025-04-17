@@ -14,4 +14,4 @@ injector = Injector([ExtensionModule])
 app = Http(__name__, conf=conf, db=injector.get(SQLAlchemy), router=injector.get(Router))
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(debug=True, port=8003)

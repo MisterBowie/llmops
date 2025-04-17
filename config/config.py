@@ -10,14 +10,11 @@ def _get_env(key: str):
 
 def _get_bool_env(key: str) -> bool:
     value: str = _get_env(key)
-
     return value.lower() == "true" if value is not None else False
 
 
 class Config:
     def __init__(self):
-        print("WTF_CSRF_ENABLED", _get_bool_env("WTF_CSRF_ENABLED"))
-        # 关闭CSRF
         self.WTF_CSRF_ENABLED = _get_bool_env("WTF_CSRF_ENABLED")
         # 配置数据库
         self.SQLALCHEMY_DATABASE_URI = _get_env("SQLALCHEMY_DATABASE_URI")
