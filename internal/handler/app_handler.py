@@ -58,7 +58,8 @@ class AppHandler:
         # content = completions.choices[0].message.content
         print(completions)
         return success_json(completions.content)
-
+    def debug(self):
+        return
     def ping(self):
         raise FailException(message="数据未找到")
         # return {"ping": "pong"}
