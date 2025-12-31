@@ -49,7 +49,8 @@ class AppHandler:
         req = CompletionReq()
         if not req.validate():
             return validate_error_json(req.errors)
-        clint = ChatOpenAI(model="deepseek-chat",api_key=os.environ.get("DS_KEY"), base_url=os.environ.get("DS_API_BASE"))
+        clint = ChatOpenAI(model="deepseek-chat", api_key=os.environ.get("DS_KEY"),
+                           base_url=os.environ.get("DS_API_BASE"))
 
         completions = clint.invoke([
             {"role": "system", "content": "你是一个简单的客服机器人，可以简单的回复用户的问题"},
@@ -58,8 +59,10 @@ class AppHandler:
         # content = completions.choices[0].message.content
         print(completions)
         return success_json(completions.content)
+
     def debug(self):
         return
+
     def ping(self):
         raise FailException(message="数据未找到")
         # return {"ping": "pong"}
