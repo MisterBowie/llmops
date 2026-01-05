@@ -1,13 +1,7 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField
-from wtforms.validators import DataRequired, Length
+from pydantic import BaseModel, Field
 
 
-class CompletionReq(FlaskForm):
+class CompletionReq(BaseModel):
     """聊天接口请求验证"""
-
-    query = StringField("query", validators=[
-        DataRequired(message="用户提问是必填的"),
-        Length(max=1000, message="用户提问最大1000")
-    ])
+    query: str = Field(..., max_length=1000, description="用户提问")
 

@@ -4,14 +4,10 @@
 import uuid
 from dataclasses import dataclass
 
-from flask import Flask
-from injector import inject
-
 from internal.model import App
 from pkg.sqlalchemy import SQLAlchemy
 
 
-@inject
 @dataclass
 class AppService:
     """应用服务逻辑"""
@@ -21,29 +17,27 @@ class AppService:
         """创建APP"""
         # 创建模型的实体类
         app = App(name="测试机器人", account_id=uuid.uuid4(), icon="", description="这是一个简单的聊天机器人")
-        with self.db.auto_commit():
+        with self.db.auto_commit() as session:
             # 将实体类添加到session中
-            self.db.session.add(app)
-            # 提交session会话
-            self.db.session.commit()
+            session.add(app)
         return app
 
     def get_app(self, id: uuid.UUID) -> App:
-        """
-           获取APP
-        """
-        app = self.db.session.query(App).get(id)
+        """获取APP"""
+        session = self.db.session
+        app = session.query(App).filter(App.id == id).first()
+        session.close()
         return app
 
     def update_app(self, id: uuid.UUID) -> App:
-        with self.db.auto_commit():
-            app = self.get_app(id)
+        with self.db.auto_commit() as session:
+            app = session.query(App).filter(App.id == id).first()
             app.name = "新的聊天机器人"
         return app
 
     def delete_app(self, id: uuid.UUID) -> App:
-        with self.db.auto_commit():
-            app = self.get_app(id)
-            self.db.session.delete(app)
+        with self.db.auto_commit() as session:
+            app = session.query(App).filter(App.id == id).first()
+            session.delete(app)
         return app
 

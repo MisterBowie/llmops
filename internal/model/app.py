@@ -1,14 +1,13 @@
 import uuid
 from datetime import datetime
 
-from internal.extension.datebase_extension import db
+from pkg.sqlalchemy import Base
 from sqlalchemy import (
     Column, UUID, String, Text, DateTime, PrimaryKeyConstraint, Index
-
 )
 
 
-class App(db.Model):
+class App(Base):
     """AI应用基础模型类"""
     __tablename__ = 'app'
     __table_args__ = (

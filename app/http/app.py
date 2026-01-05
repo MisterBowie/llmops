@@ -1,17 +1,16 @@
-from injector import Injector, Module, Binder
-from internal.server import Http
-from internal.router import Router
+import uvicorn
 from config import Config
 from dotenv import load_dotenv
-from app.http.module import ExtensionModule
-from pkg.sqlalchemy import SQLAlchemy
+from internal.server.http import create_app
+from internal.router.router import router
+from internal.extension.datebase_extension import db
 
 load_dotenv()
 
 conf = Config()
 
-injector = Injector([ExtensionModule])
-app = Http(__name__, conf=conf, db=injector.get(SQLAlchemy), router=injector.get(Router))
+app = create_app(conf=conf, db=db)
+app.include_router(router)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8003)
+    uvicorn.run("app.http.app:app", host="0.0.0.0", port=8003, reload=True)

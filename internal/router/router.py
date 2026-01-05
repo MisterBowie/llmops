@@ -1,28 +1,50 @@
-from flask import Flask, Blueprint
+from uuid import UUID
+from fastapi import APIRouter, Depends
 from internal.handler import AppHandler
-from dataclasses import dataclass
-from injector import Injector, inject
+from internal.schema.app_schema import CompletionReq
 
 
-@inject
-@dataclass
-class Router:
-    """路由"""
-    app_handler: AppHandler
+router = APIRouter()
 
-    def register_router(self, app: Flask):
-        """注册路由"""
-        # 1. 创建一个蓝图
-        bp = Blueprint("llmpos", __name__, url_prefix="")
 
-        # 将Url与对应的控制器方法做
-        # view_func 如果是app_handler.ping() 则代表的是使用返回值
-        bp.add_url_rule("/ping", view_func=self.app_handler.ping)
-        bp.add_url_rule("/app/completion", methods=["POST"], view_func=self.app_handler.completion)
-        bp.add_url_rule("/apps/<uuid:app_id>/debug", methods=["POST"], view_func=self.app_handler.debug)
-        bp.add_url_rule("/app", methods=["POST"], view_func=self.app_handler.create_app)
-        bp.add_url_rule("/app/<uuid:id>", methods=["GET"], view_func=self.app_handler.get_app)
-        bp.add_url_rule("/app/<uuid:id>", methods=["PUT"], view_func=self.app_handler.update_app)
-        bp.add_url_rule("/app/<uuid:id>", methods=["DELETE"], view_func=self.app_handler.delete_app)
-        # 在应用上去注册蓝图
-        app.register_blueprint(bp)
+def get_app_handler() -> AppHandler:
+    """获取 AppHandler 依赖"""
+    from internal.extension.datebase_extension import db
+    from internal.service import AppService
+    app_service = AppService(db=db)
+    return AppHandler(app_service=app_service)
+
+
+@router.get("/ping")
+def ping(handler: AppHandler = Depends(get_app_handler)):
+    return handler.ping()
+
+
+@router.post("/app/completion")
+def completion(req: CompletionReq, handler: AppHandler = Depends(get_app_handler)):
+    return handler.completion(req)
+
+
+@router.post("/apps/{app_id}/debug")
+def debug(app_id: UUID, handler: AppHandler = Depends(get_app_handler)):
+    return handler.debug()
+
+
+@router.post("/app")
+def create_app(handler: AppHandler = Depends(get_app_handler)):
+    return handler.create_app()
+
+
+@router.get("/app/{id}")
+def get_app(id: UUID, handler: AppHandler = Depends(get_app_handler)):
+    return handler.get_app(id)
+
+
+@router.put("/app/{id}")
+def update_app(id: UUID, handler: AppHandler = Depends(get_app_handler)):
+    return handler.update_app(id)
+
+
+@router.delete("/app/{id}")
+def delete_app(id: UUID, handler: AppHandler = Depends(get_app_handler)):
+    return handler.delete_app(id)

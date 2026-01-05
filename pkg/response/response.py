@@ -5,25 +5,20 @@
 @Author  : thezehui@gmail.com
 @File    : response.py
 """
-from dataclasses import field, dataclass
 from typing import Any
-
-from flask import jsonify
 
 from .http_code import HttpCode
 
 
-@dataclass
-class Response:
+class Response(dict):
     """基础HTTP接口响应格式"""
-    code: HttpCode = HttpCode.SUCCESS
-    message: str = ""
-    data: Any = field(default_factory=dict)
+    def __init__(self, code: HttpCode = HttpCode.SUCCESS, message: str = "", data: Any = None):
+        super().__init__(code=code, message=message, data=data if data is not None else {})
 
 
 def json(data: Response = None):
     """基础的响应接口"""
-    return jsonify(data), 200
+    return data
 
 
 def success_json(data: Any = None):

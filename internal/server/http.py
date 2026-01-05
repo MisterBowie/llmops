@@ -1,57 +1,63 @@
-from flask import Flask
-from internal.router import Router
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from config import Config
 from internal.exception import CustomException
-from pkg.response import json, Response, HttpCode
+from pkg.response import Response, HttpCode
 import os
-from flask_cors import CORS
 
 from internal.model import App
 from pkg.sqlalchemy import SQLAlchemy
 
 
-class Http(Flask):
-    def __init__(self, *args, conf: Config, db: SQLAlchemy, router: Router, **kwargs):
-        # 1.调用父类的构造的初始化
-        super().__init__(*args, **kwargs)
+def create_app(conf: Config, db: SQLAlchemy) -> FastAPI:
+    """创建 FastAPI 应用"""
+    app = FastAPI(title="LLMOps API", debug=conf.DEBUG if hasattr(conf, 'DEBUG') else False)
 
-        # 初始化应用配置
-        self.config.from_object(conf)
+    # 初始化数据库
+    db.init(
+        database_uri=conf.SQLALCHEMY_DATABASE_URI,
+        engine_options=conf.SQLALCHEMY_ENGINE_OPTIONS
+    )
+    # 确保模型被加载
+    _ = App
+    # 创建表
+    db.create_all()
 
-        # 注册绑定异常
-        self.register_error_handler(Exception, self._register_error_handler)
+    # CORS 中间件
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-        # 注册数据库
-        db.init_app(self)
-        # 创建表
-        # with self.app_context():
-        #     _ = App()
-        #     db.create_all()
-        # 5.解决前后端跨域问题
-        CORS(self, resources={
-            r"/*": {
-                "origins": "*",
-                "supports_credentials": True,
-            }
-        })
-        # 注册应用路由
-        router.register_router(self)
+    # 自定义异常处理
+    @app.exception_handler(CustomException)
+    async def custom_exception_handler(request: Request, exc: CustomException):
+        return JSONResponse(
+            status_code=200,
+            content=Response(
+                code=exc.code,
+                message=exc.message,
+                data=exc.data if exc.data is not None else {},
+            )
+        )
 
-    def _register_error_handler(self, error: Exception):
-        # 判断异常是不是我们的自定义异常
-
-        if isinstance(error, CustomException):
-            return json(Response(
-                code=error.code,
-                message=error.message,
-                data=error.data if error.data is not None else {},
-            ))
-        # 2.如果不是我们的自定义异常，则有可能是程序、数据库抛出的异常，也可以提取信息，设置为FAIL状态码
-        if self.debug or os.getenv("FLASK_ENV") == "development":
-            raise error
-        else:
-            return json(Response(
+    # 通用异常处理
+    @app.exception_handler(Exception)
+    async def general_exception_handler(request: Request, exc: Exception):
+        debug = os.getenv("FASTAPI_ENV") == "development"
+        if debug:
+            raise exc
+        return JSONResponse(
+            status_code=200,
+            content=Response(
                 code=HttpCode.FAIL,
-                message=str(error),
+                message=str(exc),
                 data=None,
-            ))
+            )
+        )
+
+    return app
